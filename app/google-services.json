@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "442295548734",
+    "project_id": "pet-api-896b6",
+    "storage_bucket": "pet-api-896b6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442295548734:android:aec30347c9821baf47ca6f",
+        "android_client_info": {
+          "package_name": "ru.ryabov.pet.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "442295548734-e3ihdj89k8hp3q9kdq37v96jo6f6fvab.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ru.ryabov.pet.application",
+            "certificate_hash": "9abef5b66f14d3756a819256af8493a625b46a61"
+          }
+        },
+        {
+          "client_id": "442295548734-1rcj0pn4u9jee5jrua91lj9854e2gfpd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuF-W-pq7T8scaUxPfPv7DAMQbZUkwCjE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "442295548734-1rcj0pn4u9jee5jrua91lj9854e2gfpd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
