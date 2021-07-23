@@ -1,4 +1,4 @@
-package ru.ryabov.pet.application.services.interceptors;
+package ru.ryabov.pet.application.retrofit.services.interceptors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

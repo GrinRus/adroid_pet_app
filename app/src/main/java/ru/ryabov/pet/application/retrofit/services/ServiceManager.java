@@ -1,4 +1,4 @@
-package ru.ryabov.pet.application.services;
+package ru.ryabov.pet.application.retrofit.services;
 
 import com.google.gson.GsonBuilder;
 
@@ -20,9 +20,9 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import ru.ryabov.pet.application.services.interceptors.PrettyLoggingInterceptor;
+import ru.ryabov.pet.application.retrofit.services.interceptors.PrettyLoggingInterceptor;
 
-import static ru.ryabov.pet.application.services.interceptors.PrettyLoggingInterceptor.Level.VERBOSE;
+import static ru.ryabov.pet.application.retrofit.services.interceptors.PrettyLoggingInterceptor.Level.VERBOSE;
 
 @Slf4j
 public class ServiceManager {
