@@ -15,12 +15,15 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,6 +37,7 @@ import ru.ryabov.pet.application.retrofit.services.weather.dto.WeatherResponse;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
+@SuppressLint("MissingPermission")
 public class WeatherActivity extends AppCompatActivity {
 
     private WeatherManager weatherManager;
@@ -116,80 +120,71 @@ public class WeatherActivity extends AppCompatActivity {
         mSomeView = binding.anotherContent;
         mDescriptionView = binding.descriptionContent;
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        mTemperatureView.setOnClickListener(view -> toggle());
+        mSomeView.setOnClickListener(view -> toggle());
+        mDescriptionView.setOnClickListener(view -> toggle());
+
+        while (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
         }
 
-        mTemperatureView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
-        mSomeView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
-        mDescriptionView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
+        Executor executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
 
-        binding.getWeather.setOnClickListener(mGetWeatherButtonClickListener);
+        executor.execute(
+                () -> {
+                    WeatherResponse weatherResponse = getAsyncWeather();
+                    handler.post(() -> updateWeatherView(Objects.requireNonNull(weatherResponse)));
+                }
+        );
+
+        binding.getWeather.setOnClickListener(v -> {
+            WeatherResponse weatherResponse = getAsyncWeather();
+            updateWeatherView(Objects.requireNonNull(weatherResponse));
+        });
     }
 
-    private final View.OnClickListener mGetWeatherButtonClickListener = new View.OnClickListener() {
-
-        @SuppressLint("MissingPermission")
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        @SneakyThrows
-        @Override
-        public void onClick(View v) {
-            WeatherResponse weatherResponse;
-
-            Future<WeatherResponse> weatherByCoordinates = weatherManager.getWeatherByCoordinates(fusedLocationClient.getLastLocation());
-            if (weatherByCoordinates.get() != null) {
-                weatherResponse = weatherByCoordinates.get();
-            } else {
-                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                AtomicReference<Location> locationGps = new AtomicReference<>();
-                locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null, Executors.newSingleThreadExecutor(), locationGps::set);
-//                Location locationGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                Location locationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-                Location location;
-
-                if (locationGps.get() != null) {
-                    location = locationGps.get();
-                } else if (locationNetwork != null) {
-                    location = locationNetwork;
-                } else {
-                    return;
-                }
-
-                weatherResponse = weatherManager.getWeatherByCoordinates(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())).get();
-            }
-
-            if (weatherResponse.getWeather().get(0).getMain().equals("Clouds")) {
-                binding.getRoot().setBackground(getDrawable(R.drawable.sunny));
-            } else {
-                binding.getRoot().setBackground(getDrawable(R.drawable.windy));
-            }
-            ((TextView) mTemperatureView).setText(String.format("%s°", weatherResponse.getMain().getTemp()));
-            ((TextView) mSomeView).setText(String.format(
-                    "%s°/%s° Feels Like %s°",
-                    weatherResponse.getMain().getTemp_max(),
-                    weatherResponse.getMain().getTemp_min(),
-                    weatherResponse.getMain().getFeels_like()
-            ));
-            ((TextView) mDescriptionView).setText(String.format("%s", weatherResponse.getWeather().get(0).getDescription()));
-            return;
+    private void updateWeatherView(WeatherResponse weatherResponse) {
+        if (weatherResponse.getWeather().get(0).getMain().equals("Clouds")) {
+            binding.getRoot().setBackground(getDrawable(R.drawable.sunny));
+        } else {
+            binding.getRoot().setBackground(getDrawable(R.drawable.windy));
         }
-    };
+        ((TextView) mTemperatureView).setText(String.format("%s°", weatherResponse.getMain().getTemp()));
+        ((TextView) mSomeView).setText(String.format(
+                "%s°/%s° Feels Like %s°",
+                weatherResponse.getMain().getTemp_max(),
+                weatherResponse.getMain().getTemp_min(),
+                weatherResponse.getMain().getFeels_like()
+        ));
+        ((TextView) mDescriptionView).setText(String.format("%s", weatherResponse.getWeather().get(0).getDescription()));
+    }
+
+
+    @SneakyThrows
+    private WeatherResponse getAsyncWeather() {
+        Future<WeatherResponse> weatherByCoordinates = weatherManager.getWeatherByCoordinates(fusedLocationClient.getLastLocation());
+        if (weatherByCoordinates.get() != null) {
+            return weatherByCoordinates.get();
+        } else {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            AtomicReference<Location> locationGps = new AtomicReference<>();
+            locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null, Executors.newSingleThreadExecutor(), locationGps::set);
+//                Location locationGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location locationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            Location location;
+
+            if (locationGps.get() != null) {
+                location = locationGps.get();
+            } else if (locationNetwork != null) {
+                location = locationNetwork;
+            } else {
+                return null;
+            }
+            return weatherManager.getWeatherByCoordinates(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())).get();
+        }
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
