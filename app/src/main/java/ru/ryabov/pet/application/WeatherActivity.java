@@ -1,22 +1,31 @@
 package ru.ryabov.pet.application;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import lombok.SneakyThrows;
-import ru.ryabov.pet.application.dao.FirebaseFirestoreDAO;
 import ru.ryabov.pet.application.databinding.ActivityWeatherBinding;
 import ru.ryabov.pet.application.retrofit.services.weather.WeatherManager;
 import ru.ryabov.pet.application.retrofit.services.weather.dto.WeatherResponse;
@@ -28,6 +37,7 @@ import ru.ryabov.pet.application.retrofit.services.weather.dto.WeatherResponse;
 public class WeatherActivity extends AppCompatActivity {
 
     private WeatherManager weatherManager;
+    private FusedLocationProviderClient fusedLocationClient;
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -46,7 +56,9 @@ public class WeatherActivity extends AppCompatActivity {
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
-    private View mContentView;
+    private View mTemperatureView;
+    private View mSomeView;
+    private View mDescriptionView;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -56,7 +68,7 @@ public class WeatherActivity extends AppCompatActivity {
             // Note that some of these constants are new as of API 16 (Jelly Bean)
             // and API 19 (KitKat). It is safe to use them, as they are inlined
             // at compile-time and do nothing on earlier devices.
-            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+            mTemperatureView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -83,29 +95,8 @@ public class WeatherActivity extends AppCompatActivity {
             hide();
         }
     };
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    if (AUTO_HIDE) {
-                        delayedHide(AUTO_HIDE_DELAY_MILLIS);
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    view.performClick();
-                    break;
-                default:
-                    break;
-            }
-            return false;
-        }
-    };
+
+
     private ActivityWeatherBinding binding;
 
     @SneakyThrows
@@ -113,38 +104,92 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         weatherManager = new WeatherManager();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         binding = ActivityWeatherBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         mVisible = true;
         mControlsView = binding.fullscreenContentControls;
-        mContentView = binding.fullscreenContent;
+        mTemperatureView = binding.temperatureContent;
+        mSomeView = binding.anotherContent;
+        mDescriptionView = binding.descriptionContent;
 
-        Future<WeatherResponse> weatherByCoordinates = weatherManager.getWeatherByCoordinates("51.5074", "0.1278");
-        WeatherResponse weatherResponse = weatherByCoordinates.get();
-        if (weatherResponse.getWeather().get(0).getMain().equals("Clouds")) {
-            binding.getRoot().setBackground(getDrawable(R.drawable.sunny));
-        } else {
-            binding.getRoot().setBackground(getDrawable(R.drawable.windy));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
         }
-        ((TextView)mContentView).setText(weatherResponse.toString());
 
-        // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
+        mTemperatureView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggle();
+            }
+        });
+        mSomeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggle();
+            }
+        });
+        mDescriptionView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toggle();
             }
         });
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        binding.dummyButton.setOnTouchListener(mDelayHideTouchListener);
+        binding.getWeather.setOnClickListener(mGetWeatherButtonClickListener);
     }
+
+    private final View.OnClickListener mGetWeatherButtonClickListener = new View.OnClickListener() {
+
+        @SuppressLint("MissingPermission")
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @SneakyThrows
+        @Override
+        public void onClick(View v) {
+            WeatherResponse weatherResponse;
+
+            Future<WeatherResponse> weatherByCoordinates = weatherManager.getWeatherByCoordinates(fusedLocationClient.getLastLocation());
+            if (weatherByCoordinates.get() != null) {
+                weatherResponse = weatherByCoordinates.get();
+            } else {
+                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                AtomicReference<Location> locationGps = new AtomicReference<>();
+                locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null, Executors.newSingleThreadExecutor(), locationGps::set);
+//                Location locationGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                Location locationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                Location location;
+
+                if (locationGps.get() != null) {
+                    location = locationGps.get();
+                } else if (locationNetwork != null) {
+                    location = locationNetwork;
+                } else {
+                    return;
+                }
+
+                weatherResponse = weatherManager.getWeatherByCoordinates(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())).get();
+            }
+
+            if (weatherResponse.getWeather().get(0).getMain().equals("Clouds")) {
+                binding.getRoot().setBackground(getDrawable(R.drawable.sunny));
+            } else {
+                binding.getRoot().setBackground(getDrawable(R.drawable.windy));
+            }
+            ((TextView) mTemperatureView).setText(String.format("%s°", weatherResponse.getMain().getTemp()));
+            ((TextView) mSomeView).setText(String.format(
+                    "%s°/%s° Feels Like %s°",
+                    weatherResponse.getMain().getTemp_max(),
+                    weatherResponse.getMain().getTemp_min(),
+                    weatherResponse.getMain().getFeels_like()
+            ));
+            ((TextView) mDescriptionView).setText(String.format("%s", weatherResponse.getWeather().get(0).getDescription()));
+            return;
+        }
+    };
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -180,7 +225,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private void show() {
         // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        mTemperatureView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
 
