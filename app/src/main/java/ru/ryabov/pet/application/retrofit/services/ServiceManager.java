@@ -24,6 +24,8 @@ import ru.ryabov.pet.application.retrofit.services.interceptors.PrettyLoggingInt
 
 import static ru.ryabov.pet.application.retrofit.services.interceptors.PrettyLoggingInterceptor.Level.VERBOSE;
 
+import android.util.Log;
+
 @Slf4j
 public class ServiceManager {
 
@@ -44,7 +46,7 @@ public class ServiceManager {
                 .baseUrl(baseUrl)
                 .client(httpClientBuilder
                         .followRedirects(false)
-                        .addInterceptor(new PrettyLoggingInterceptor(log::info).setLevel(VERBOSE))
+                        .addInterceptor(new PrettyLoggingInterceptor(PrettyLoggingInterceptor.Logger.DEFAULT).setLevel(VERBOSE))
                         .build())
                 .addConverterFactory(GsonConverterFactory.create(
                         new GsonBuilder()

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
-import lombok.extern.slf4j.Slf4j;
+
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -26,7 +26,6 @@ import java.util.Set;
 import static com.google.gson.JsonParser.parseString;
 import static okhttp3.internal.platform.Platform.INFO;
 
-@Slf4j
 public class PrettyLoggingInterceptor implements Interceptor {
 
     private static final Charset UTF8 = Charset.forName("UTF-8");

@@ -24,12 +24,13 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.concurrent.Executors;
 
-import ru.ryabov.pet.application.databinding.FragmentSecondBinding;
+import ru.ryabov.pet.application.databinding.FragmentAuthBinding;
 
 public class AuthFragment extends Fragment {
 
-    private static final String TAG = "AUTH";
-    private FragmentSecondBinding binding;
+    private static final String TAG = "AUTH_FRAGMENT";
+    public static final String USER_SUCCESS_AUTH = "UserSuccessAuth";
+    private FragmentAuthBinding binding;
     private FirebaseAuth mAuth;
     private Activity activity;
     private EditText editEmail;
@@ -41,7 +42,7 @@ public class AuthFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = FragmentSecondBinding.inflate(inflater, container, false);
+        binding = FragmentAuthBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
@@ -143,7 +144,7 @@ public class AuthFragment extends Fragment {
 
     private void successAuth() {
         Intent intent = new Intent();
-        intent.setAction("UserSuccessAuth");
+        intent.setAction(USER_SUCCESS_AUTH);
         activity.sendBroadcast(intent);
         NavHostFragment.findNavController(AuthFragment.this)
                 .navigate(R.id.action_SecondFragment_to_MainFragment);

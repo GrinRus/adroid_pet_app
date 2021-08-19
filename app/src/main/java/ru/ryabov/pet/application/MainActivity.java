@@ -2,6 +2,8 @@ package ru.ryabov.pet.application;
 
 import static android.view.View.VISIBLE;
 
+import static ru.ryabov.pet.application.AuthFragment.USER_SUCCESS_AUTH;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mAuth = FirebaseAuth.getInstance();
-        registerReceiver(new AuthBroadCastReceiver(), new IntentFilter("UserSuccessAuth"));
+        registerReceiver(new AuthBroadCastReceiver(), new IntentFilter(USER_SUCCESS_AUTH));
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -94,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         mAuth.signOut();
     }
-
 
 
     @Override

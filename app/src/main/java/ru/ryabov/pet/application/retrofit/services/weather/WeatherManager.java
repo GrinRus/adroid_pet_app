@@ -19,6 +19,7 @@ public class WeatherManager extends ServiceManager {
 
     public static final String METRIC = "metric";
     public static final String OPEN_WEATHER_MAP_KEY = "15d04c757e4fe84f08ae5997360f77da";
+    private static final String TAG = "WEATHER_MANAGER";
     private final WeatherService service;
 
     public WeatherManager() {
@@ -38,7 +39,8 @@ public class WeatherManager extends ServiceManager {
     @SneakyThrows
     private WeatherResponse getBody(Task<Location> lastLocation) {
         while (!lastLocation.isComplete()){
-            Log.d("some", "getBody: d");
+            Log.d(TAG, "wait for location");
+            Thread.currentThread().sleep(1000);
         }
         Location location = lastLocation.getResult();
         if (location == null) {
