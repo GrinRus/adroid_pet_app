@@ -13,16 +13,16 @@
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/AuthFragment" />
         <action
             android:id="@+id/action_FirstFragment_to_MainFragment"
             app:destination="@id/MainFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="ru.ryabov.pet.application.SecondFragment"
+        android:id="@+id/AuthFragment"
+        android:name="ru.ryabov.pet.application.AuthFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        tools:layout="@layout/fragment_auth">
 
         <action
             android:id="@+id/action_SecondFragment_to_MainFragment"

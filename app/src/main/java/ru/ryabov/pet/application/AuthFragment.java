@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 
 import ru.ryabov.pet.application.databinding.FragmentSecondBinding;
 
-public class SecondFragment extends Fragment {
+public class AuthFragment extends Fragment {
 
     private static final String TAG = "AUTH";
     private FragmentSecondBinding binding;
@@ -137,7 +137,7 @@ public class SecondFragment extends Fragment {
     }
 
     private void failAuth() {
-        NavHostFragment.findNavController(SecondFragment.this)
+        NavHostFragment.findNavController(AuthFragment.this)
                 .navigate(R.id.action_SecondFragment_to_FirstFragment);
     }
 
@@ -145,7 +145,7 @@ public class SecondFragment extends Fragment {
         Intent intent = new Intent();
         intent.setAction("UserSuccessAuth");
         activity.sendBroadcast(intent);
-        NavHostFragment.findNavController(SecondFragment.this)
+        NavHostFragment.findNavController(AuthFragment.this)
                 .navigate(R.id.action_SecondFragment_to_MainFragment);
     }
 
