@@ -10,17 +10,22 @@ import androidx.fragment.app.Fragment;
 
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import ru.ryabov.pet.application.databinding.FragmentFirstBinding;
 
 public class FirstFragment extends Fragment {
 
     private FragmentFirstBinding binding;
+    private FirebaseAuth mAuth;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+
+        mAuth = FirebaseAuth.getInstance();
 
         binding = FragmentFirstBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -30,9 +35,11 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        binding.buttonFirst.setOnClickListener(view1 -> {
+            if (mAuth.getCurrentUser() != null) {
+                NavHostFragment.findNavController(FirstFragment.this)
+                        .navigate(R.id.action_FirstFragment_to_MainFragment);
+            } else {
                 NavHostFragment.findNavController(FirstFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }

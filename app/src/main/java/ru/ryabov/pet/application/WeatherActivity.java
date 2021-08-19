@@ -134,13 +134,13 @@ public class WeatherActivity extends AppCompatActivity {
         executor.execute(
                 () -> {
                     WeatherResponse weatherResponse = getAsyncWeather();
-                    handler.post(() -> updateWeatherView(Objects.requireNonNull(weatherResponse)));
+                    handler.post(() -> updateWeatherView(weatherResponse));
                 }
         );
 
         binding.getWeather.setOnClickListener(v -> {
             WeatherResponse weatherResponse = getAsyncWeather();
-            updateWeatherView(Objects.requireNonNull(weatherResponse));
+            updateWeatherView(weatherResponse);
         });
     }
 
