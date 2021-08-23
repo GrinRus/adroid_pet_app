@@ -8,9 +8,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import ru.ryabov.pet.application.databinding.FragmentFirstBinding;
 
@@ -18,6 +21,7 @@ public class FirstFragment extends Fragment {
 
     private FragmentFirstBinding binding;
     private FirebaseAuth mAuth;
+    private NavController navController;
 
     @Override
     public View onCreateView(
@@ -28,6 +32,8 @@ public class FirstFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
 
         binding = FragmentFirstBinding.inflate(inflater, container, false);
+        navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_content_main);
+
         return binding.getRoot();
 
     }
@@ -50,6 +56,22 @@ public class FirstFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mAuth.getCurrentUser() != null) {
+            navController.navigate(R.id.MainFragment);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAuth.getCurrentUser() != null) {
+            navController.navigate(R.id.MainFragment);
+        }
     }
 
 }

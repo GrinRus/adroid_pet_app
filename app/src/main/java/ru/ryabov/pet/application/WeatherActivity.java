@@ -2,12 +2,6 @@ package ru.ryabov.pet.application;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -16,13 +10,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -33,36 +32,22 @@ import ru.ryabov.pet.application.databinding.ActivityWeatherBinding;
 import ru.ryabov.pet.application.retrofit.services.weather.WeatherManager;
 import ru.ryabov.pet.application.retrofit.services.weather.dto.WeatherResponse;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 @SuppressLint("MissingPermission")
 public class WeatherActivity extends AppCompatActivity {
 
+    private static final String TAG = "WeatherActivity";
     private WeatherManager weatherManager;
     private FusedLocationProviderClient fusedLocationClient;
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
-
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
+    private View mCityView;
     private View mTemperatureView;
     private View mSomeView;
     private View mDescriptionView;
+    private ActivityWeatherBinding binding;
+    private View mControlsView;
+    private boolean mVisible;
+
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -80,7 +65,7 @@ public class WeatherActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private View mControlsView;
+
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -92,16 +77,7 @@ public class WeatherActivity extends AppCompatActivity {
             mControlsView.setVisibility(View.VISIBLE);
         }
     };
-    private boolean mVisible;
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
 
-
-    private ActivityWeatherBinding binding;
 
     @SneakyThrows
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -116,6 +92,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         mVisible = true;
         mControlsView = binding.fullscreenContentControls;
+        mCityView = binding.cityContent;
         mTemperatureView = binding.temperatureContent;
         mSomeView = binding.anotherContent;
         mDescriptionView = binding.descriptionContent;
@@ -124,9 +101,7 @@ public class WeatherActivity extends AppCompatActivity {
         mSomeView.setOnClickListener(view -> toggle());
         mDescriptionView.setOnClickListener(view -> toggle());
 
-        while (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
-        }
+        checkPermissionsAndRequestIfNotExist();
 
         Executor executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -134,6 +109,13 @@ public class WeatherActivity extends AppCompatActivity {
         executor.execute(
                 () -> {
                     WeatherResponse weatherResponse = getAsyncWeather();
+                    while (weatherResponse == null) {
+                        try {
+                            Thread.currentThread().sleep(100);
+                        } catch (InterruptedException e) {
+                            Log.d(TAG, e.toString());
+                        }
+                    }
                     handler.post(() -> updateWeatherView(weatherResponse));
                 }
         );
@@ -150,6 +132,7 @@ public class WeatherActivity extends AppCompatActivity {
         } else {
             binding.getRoot().setBackground(getDrawable(R.drawable.windy));
         }
+        ((TextView) mCityView).setText(weatherResponse.getName());
         ((TextView) mTemperatureView).setText(String.format("%s°", weatherResponse.getMain().getTemp()));
         ((TextView) mSomeView).setText(String.format(
                 "%s°/%s° Feels Like %s°",
@@ -163,13 +146,26 @@ public class WeatherActivity extends AppCompatActivity {
 
     @SneakyThrows
     private WeatherResponse getAsyncWeather() {
-        Future<WeatherResponse> weatherByCoordinates = weatherManager.getWeatherByCoordinates(fusedLocationClient.getLastLocation());
+        checkPermissionsAndRequestIfNotExist();
+        while (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            try {
+                Thread.currentThread().sleep(100);
+            } catch (InterruptedException e) {
+                Log.d(TAG, e.toString());
+            }
+        }
+        Future<WeatherResponse> weatherByCoordinates = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            weatherByCoordinates = weatherManager.getWeatherByCoordinates(fusedLocationClient.getLastLocation());
+        }
         if (weatherByCoordinates.get() != null) {
             return weatherByCoordinates.get();
         } else {
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             AtomicReference<Location> locationGps = new AtomicReference<>();
-            locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null, Executors.newSingleThreadExecutor(), locationGps::set);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null, Executors.newSingleThreadExecutor(), locationGps::set);
+            }
 //                Location locationGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             Location locationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
@@ -183,6 +179,12 @@ public class WeatherActivity extends AppCompatActivity {
                 return null;
             }
             return weatherManager.getWeatherByCoordinates(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())).get();
+        }
+    }
+
+    private void checkPermissionsAndRequestIfNotExist() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            this.runOnUiThread(() -> ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0));
         }
     }
 
@@ -234,7 +236,7 @@ public class WeatherActivity extends AppCompatActivity {
      * previously scheduled calls.
      */
     private void delayedHide(int delayMillis) {
-        mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, delayMillis);
+        mHideHandler.removeCallbacks(this::hide);
+        mHideHandler.postDelayed(this::hide, delayMillis);
     }
 }

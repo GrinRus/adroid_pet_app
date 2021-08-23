@@ -37,5 +37,19 @@
         android:name="ru.ryabov.pet.application.MainFragment"
         android:label="@string/main_fragment_label"
         tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_MainFragment_to_NoteFragment"
+            app:destination="@id/NoteFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/NoteFragment"
+        android:name="ru.ryabov.pet.application.NoteFragment"
+        android:label="@string/note_fragment_label"
+        tools:layout="@layout/note_fragment">
+        <action
+            android:id="@+id/action_NoteFragment_toMainFragment"
+            app:destination="@id/MainFragment" />
+    </fragment>
+
 </navigation>
