@@ -1,7 +1,6 @@
 package ru.ryabov.pet.application;
 
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +49,7 @@ public class NoteFragment extends Fragment {
             Executor executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 db.saveNote(note).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         Toast.makeText(getContext(), "Note add",
                                 Toast.LENGTH_SHORT).show();
                         getActivity().runOnUiThread(() -> NavHostFragment.findNavController(NoteFragment.this).navigate(R.id.action_NoteFragment_toMainFragment));

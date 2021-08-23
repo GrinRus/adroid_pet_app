@@ -1,10 +1,6 @@
 package ru.ryabov.pet.application.dao;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.util.Log;
-
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -16,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
-import ru.ryabov.pet.application.AuthFragment;
-import ru.ryabov.pet.application.R;
 
 @Getter
 public class FirebaseDAO {
@@ -48,7 +42,7 @@ public class FirebaseDAO {
 
     public Task<DocumentReference> saveNote(Note note) {
         return db.collection("notes").add(note).addOnCompleteListener(task -> {
-            if (task.isSuccessful()){
+            if (task.isSuccessful()) {
                 notes.add(note);
             }
         });

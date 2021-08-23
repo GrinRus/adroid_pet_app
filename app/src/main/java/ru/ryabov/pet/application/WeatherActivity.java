@@ -155,18 +155,19 @@ public class WeatherActivity extends AppCompatActivity {
             }
         }
         Future<WeatherResponse> weatherByCoordinates = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             weatherByCoordinates = weatherManager.getWeatherByCoordinates(fusedLocationClient.getLastLocation());
         }
-        if (weatherByCoordinates.get() != null) {
+        if (weatherByCoordinates != null && weatherByCoordinates.get() != null) {
             return weatherByCoordinates.get();
         } else {
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             AtomicReference<Location> locationGps = new AtomicReference<>();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null, Executors.newSingleThreadExecutor(), locationGps::set);
+            } else {
+                locationGps = new AtomicReference<>(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
             }
-//                Location locationGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             Location locationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             Location location;
@@ -178,7 +179,11 @@ public class WeatherActivity extends AppCompatActivity {
             } else {
                 return null;
             }
-            return weatherManager.getWeatherByCoordinates(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())).get();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                return weatherManager.getWeatherByCoordinates(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())).get();
+            } else {
+                return weatherManager.getWeatherTaskByCoordinates(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude())).get();
+            }
         }
     }
 

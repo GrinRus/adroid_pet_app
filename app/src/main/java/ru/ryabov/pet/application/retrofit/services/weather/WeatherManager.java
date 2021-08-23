@@ -1,6 +1,7 @@
 package ru.ryabov.pet.application.retrofit.services.weather;
 
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
@@ -31,6 +32,10 @@ public class WeatherManager extends ServiceManager {
         return CompletableFuture.supplyAsync(() -> getBody(lat, lon));
     }
 
+    public AsyncTask<String, String, WeatherResponse> getWeatherTaskByCoordinates(String lat, String lon) {
+        return new GetWeatherTask().execute(lat, lon);
+    }
+
     @SneakyThrows
     private WeatherResponse getBody(String lat, String lon) {
         return service.getWeatherByCoordinates(lat, lon, METRIC, WeatherManager.OPEN_WEATHER_MAP_KEY).execute().body();
@@ -38,7 +43,7 @@ public class WeatherManager extends ServiceManager {
 
     @SneakyThrows
     private WeatherResponse getBody(Task<Location> lastLocation) {
-        while (!lastLocation.isComplete()){
+        while (!lastLocation.isComplete()) {
             Log.d(TAG, "wait for location");
             Thread.currentThread().sleep(1000);
         }
@@ -54,5 +59,12 @@ public class WeatherManager extends ServiceManager {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public Future<WeatherResponse> getWeatherByCoordinates(Task<Location> lastLocation) {
         return CompletableFuture.supplyAsync(() -> getBody(lastLocation));
+    }
+
+    private class GetWeatherTask extends AsyncTask<String, String, WeatherResponse> {
+        @Override
+        protected WeatherResponse doInBackground(String... strings) {
+            return getBody(strings[0], strings[1]);
+        }
     }
 }

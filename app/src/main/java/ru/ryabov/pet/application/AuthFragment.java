@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -59,7 +58,7 @@ public class AuthFragment extends Fragment {
         binding.buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isEmailAndPasswordValid(editEmail,  editPassword)) return;
+                if (!isEmailAndPasswordValid(editEmail, editPassword)) return;
                 signUpNewUser(editEmail.getText().toString(), editPassword.getText().toString());
             }
         });
@@ -67,19 +66,19 @@ public class AuthFragment extends Fragment {
         binding.buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isEmailAndPasswordValid(editEmail,  editPassword)) return;
+                if (!isEmailAndPasswordValid(editEmail, editPassword)) return;
                 signIn(editEmail.getText().toString(), editPassword.getText().toString());
             }
         });
     }
 
     private boolean isEmailAndPasswordValid(EditText editEmail, EditText editPassword) {
-        if (editEmail.getText() == null || editEmail.getText().toString().isEmpty()){
+        if (editEmail.getText() == null || editEmail.getText().toString().isEmpty()) {
             Toast.makeText(getContext(), "Please fill email",
                     Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (editPassword.getText() == null || editEmail.getText().toString().isEmpty()){
+        if (editPassword.getText() == null || editEmail.getText().toString().isEmpty()) {
             Toast.makeText(getContext(), "Please fill password",
                     Toast.LENGTH_SHORT).show();
             return false;
