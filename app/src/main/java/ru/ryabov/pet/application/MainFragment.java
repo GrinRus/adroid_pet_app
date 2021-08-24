@@ -57,7 +57,7 @@ public class MainFragment extends Fragment {
 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView = binding.recyclerView;
-        mAdapter = new CustomAdapter(mDataset);
+        mAdapter = new CustomAdapter(mDataset, this);
         mAddButton = binding.addButton;
 
 
@@ -75,7 +75,7 @@ public class MainFragment extends Fragment {
 
         mAddButton.setOnClickListener((v -> {
             NavHostFragment.findNavController(MainFragment.this)
-                    .navigate(R.id.action_MainFragment_to_NoteFragment);
+                    .navigate(R.id.action_MainFragment_to_AddNoteFragment);
         }));
 
         return binding.getRoot();

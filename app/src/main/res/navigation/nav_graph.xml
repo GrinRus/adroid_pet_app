@@ -38,8 +38,21 @@
         android:label="@string/main_fragment_label"
         tools:layout="@layout/fragment_main">
         <action
+            android:id="@+id/action_MainFragment_to_AddNoteFragment"
+            app:destination="@id/NoteAddFragment" />
+        <action
             android:id="@+id/action_MainFragment_to_NoteFragment"
             app:destination="@id/NoteFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/NoteAddFragment"
+        android:name="ru.ryabov.pet.application.NoteAddFragment"
+        android:label="@string/note_add_fragment_label"
+        tools:layout="@layout/note_fragment">
+        <action
+            android:id="@+id/action_NoteAddFragment_toMainFragment"
+            app:destination="@id/MainFragment" />
     </fragment>
 
     <fragment
@@ -50,6 +63,22 @@
         <action
             android:id="@+id/action_NoteFragment_toMainFragment"
             app:destination="@id/MainFragment" />
+        <argument
+            android:name="textViewFirst"
+            app:argType="string"
+            android:defaultValue="empty" />
+        <argument
+            android:name="textViewSecond"
+            app:argType="string"
+            android:defaultValue="empty" />
+        <argument
+            android:name="textViewThird"
+            app:argType="string"
+            android:defaultValue="empty" />
+        <argument
+            android:name="textViewFourth"
+            app:argType="string"
+            android:defaultValue="empty" />
     </fragment>
 
 </navigation>

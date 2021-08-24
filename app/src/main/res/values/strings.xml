@@ -23,4 +23,6 @@
     <string name="submit">Submit</string>
     <string name="add_text">Add text</string>
     <string name="note_fragment_label">note</string>
+    <string name="note_add_fragment_label">note_add</string>
+    <string name="to_notes_list">To Notes List</string>
 </resources>

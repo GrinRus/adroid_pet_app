@@ -10,6 +10,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.Getter;
 
@@ -53,7 +54,7 @@ public class FirebaseDAO {
         return db.collection("notes").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    if (document.get("userId", String.class).equals(userId)) {
+                    if (Objects.equals(document.get("userId", String.class), userId)) {
                         Note note = toNote(document);
                         Log.d(TAG, "getNotes: " + note);
                         notes.add(note);

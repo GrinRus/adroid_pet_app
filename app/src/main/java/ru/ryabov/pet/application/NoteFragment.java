@@ -5,61 +5,44 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.firebase.auth.FirebaseAuth;
-
-import java.time.LocalDateTime;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
-import ru.ryabov.pet.application.dao.FirebaseDAO;
-import ru.ryabov.pet.application.dao.Note;
 import ru.ryabov.pet.application.databinding.NoteFragmentBinding;
 
 public class NoteFragment extends Fragment {
 
     private NoteFragmentBinding binding;
-    private FirebaseAuth mAuth;
-    private EditText mEditText;
-    private Button mSubmitButton;
-    private FirebaseDAO db;
+    private TextView noteTextFirst;
+    private TextView noteTextSecond;
+    private TextView noteTextThird;
+    private TextView noteTextFourth;
+    private Button mToNotesButton;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         binding = NoteFragmentBinding.inflate(inflater, container, false);
 
-        db = FirebaseDAO.getInstance();
-        mEditText = binding.editTextTextPersonName;
-        mSubmitButton = binding.button;
-        mAuth = FirebaseAuth.getInstance();
+        noteTextFirst = binding.noteTextOne;
+        noteTextSecond = binding.noteTextSecond;
+        noteTextThird = binding.noteTextThird;
+        noteTextFourth = binding.noteTextFourth;
 
-        mSubmitButton.setOnClickListener((view) -> {
-            Note note = new Note();
-            note.setText(mEditText.getText().toString());
-            note.setDateTime(LocalDateTime.now().toString());
-            note.setUserId(mAuth.getUid());
+        mToNotesButton = binding.button;
 
-            Executor executor = Executors.newSingleThreadExecutor();
-            executor.execute(() -> {
-                db.saveNote(note).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(getContext(), "Note add",
-                                Toast.LENGTH_SHORT).show();
-                        getActivity().runOnUiThread(() -> NavHostFragment.findNavController(NoteFragment.this).navigate(R.id.action_NoteFragment_toMainFragment));
-                    }
-                }).addOnFailureListener(task -> {
-                    Toast.makeText(getContext(), "Please retry add note",
-                            Toast.LENGTH_SHORT).show();
-                });
-            });
-        });
+        noteTextFirst.setText(getArguments().getString("textViewFirst"));
+        noteTextSecond.setText(getArguments().getString("textViewSecond"));
+        noteTextThird.setText(getArguments().getString("textViewThird"));
+        noteTextFourth.setText(getArguments().getString("textViewFourth"));
+
+        mToNotesButton.setOnClickListener((v -> {
+            NavHostFragment.findNavController(NoteFragment.this)
+                    .navigate(R.id.action_NoteFragment_toMainFragment);
+        }));
 
         return binding.getRoot();
     }
