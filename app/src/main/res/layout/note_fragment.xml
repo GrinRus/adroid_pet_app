@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintTop_toBottomOf="parent"
+    tools:context=".NoteFragment">
+
+    <TextView
+        android:id="@+id/noteTextOne"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintVertical_weight="2"
+        app:layout_constraintBottom_toTopOf="@id/noteTextSecond"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/noteTextSecond"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:layout_constraintVertical_weight="2"
+        app:layout_constraintBottom_toTopOf="@id/noteTextThird"
+        app:layout_constraintTop_toBottomOf="@id/noteTextOne" />
+    <TextView
+        android:id="@+id/noteTextThird"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:layout_constraintVertical_weight="2"
+        app:layout_constraintBottom_toTopOf="@id/scrollView"
+        app:layout_constraintTop_toBottomOf="@id/noteTextSecond" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text="@string/to_notes_list"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        app:layout_constraintBottom_toTopOf="@id/button"
+        app:layout_constraintTop_toBottomOf="@id/noteTextThird" >
+
+        <TextView
+            android:id="@+id/noteTextFourth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/button"
+            app:layout_constraintTop_toBottomOf="@id/noteTextThird" />
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

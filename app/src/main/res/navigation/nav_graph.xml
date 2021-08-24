@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/MainFragment">
 
     <fragment
         android:id="@+id/FirstFragment"
@@ -13,16 +13,75 @@
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/AuthFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_MainFragment"
+            app:destination="@id/MainFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="ru.ryabov.pet.application.SecondFragment"
+        android:id="@+id/AuthFragment"
+        android:name="ru.ryabov.pet.application.AuthFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        tools:layout="@layout/fragment_auth">
 
+        <action
+            android:id="@+id/action_AuthFragment_to_MainFragment"
+            app:destination="@id/MainFragment" />
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/MainFragment"
+        android:name="ru.ryabov.pet.application.MainFragment"
+        android:label="@string/main_fragment_label"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_MainFragment_to_AddNoteFragment"
+            app:destination="@id/NoteAddFragment" />
+        <action
+            android:id="@+id/action_MainFragment_to_NoteFragment"
+            app:destination="@id/NoteFragment" />
+        <action
+            android:id="@+id/action_MainFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/NoteAddFragment"
+        android:name="ru.ryabov.pet.application.NoteAddFragment"
+        android:label="@string/note_add_fragment_label"
+        tools:layout="@layout/note_fragment">
+        <action
+            android:id="@+id/action_NoteAddFragment_toMainFragment"
+            app:destination="@id/MainFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/NoteFragment"
+        android:name="ru.ryabov.pet.application.NoteFragment"
+        android:label="@string/note_fragment_label"
+        tools:layout="@layout/note_fragment">
+        <action
+            android:id="@+id/action_NoteFragment_toMainFragment"
+            app:destination="@id/MainFragment" />
+        <argument
+            android:name="textViewFirst"
+            app:argType="string"
+            android:defaultValue="empty" />
+        <argument
+            android:name="textViewSecond"
+            app:argType="string"
+            android:defaultValue="empty" />
+        <argument
+            android:name="textViewThird"
+            app:argType="string"
+            android:defaultValue="empty" />
+        <argument
+            android:name="textViewFourth"
+            app:argType="string"
+            android:defaultValue="empty" />
+    </fragment>
+
 </navigation>

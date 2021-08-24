@@ -1,12 +1,27 @@
 <resources>
     <string name="app_name">Pet app</string>
-    <string name="action_settings">Settings</string>
+    <string name="log_out">Log out</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="first_fragment_label">Hello</string>
+    <string name="second_fragment_label">Authorize</string>
+    <string name="main_fragment_label">Notes</string>
+    <string name="authorize">Authorize</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="hello_first_fragment">Hello, please authorize</string>
+    <string name="title_activity_weather">FullscreenActivity</string>
+    <string name="weather_button">Get Weather</string>
+    <string name="weather_content">Weather</string>
+    <string name="email">email</string>
+    <string name="password">password</string>
+    <string name="city_content">City</string>
+    <string name="temperature_content">Temperature</string>
+    <string name="description_content">Description</string>
+    <string name="another_content">Another</string>
+    <string name="submit">Submit</string>
+    <string name="add_text">Add text</string>
+    <string name="note_fragment_label">note</string>
+    <string name="note_add_fragment_label">note_add</string>
+    <string name="to_notes_list">To Notes List</string>
 </resources>
