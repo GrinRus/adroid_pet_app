@@ -105,7 +105,7 @@ public class AuthFragment extends Fragment {
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Looper.prepare();
-                            Toast.makeText(getContext(), "Authentication failed.",
+                            Toast.makeText(getContext(), "Authentication failed." + task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
                             activity.runOnUiThread(() -> failAuth());
                         }
@@ -128,7 +128,7 @@ public class AuthFragment extends Fragment {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Looper.prepare();
-                            Toast.makeText(getContext(), "Authentication failed.",
+                            Toast.makeText(getContext(), "Authentication failed." + task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
                             activity.runOnUiThread(() -> failAuth());
                         }

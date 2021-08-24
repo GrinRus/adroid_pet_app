@@ -120,6 +120,22 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void updateWeatherView(WeatherResponse weatherResponse) {
+        switch (weatherResponse.getWeather().get(0).getMain()) {
+            case "Clouds":
+                binding.getRoot().setBackground(getDrawable(R.drawable.sunny));
+                break;
+            case "Rain":
+                binding.getRoot().setBackground(getDrawable(R.drawable.rain));
+                break;
+            case "Snow":
+                binding.getRoot().setBackground(getDrawable(R.drawable.snow));
+                break;
+            case "Extreme":
+                binding.getRoot().setBackground(getDrawable(R.drawable.windy));
+                break;
+            default:
+                binding.getRoot().setBackground(getDrawable(R.drawable.weather));
+        }
         if (weatherResponse.getWeather().get(0).getMain().equals("Clouds")) {
             binding.getRoot().setBackground(getDrawable(R.drawable.sunny));
         } else {
