@@ -25,7 +25,7 @@
         tools:layout="@layout/fragment_auth">
 
         <action
-            android:id="@+id/action_SecondFragment_to_MainFragment"
+            android:id="@+id/action_AuthFragment_to_MainFragment"
             app:destination="@id/MainFragment" />
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_MainFragment_to_NoteFragment"
             app:destination="@id/NoteFragment" />
+        <action
+            android:id="@+id/action_MainFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
     </fragment>
 
     <fragment

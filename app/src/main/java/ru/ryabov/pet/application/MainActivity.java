@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             mAuth.signOut();
             navController.navigate(R.id.FirstFragment);
+            binding.weatherButton.setVisibility(View.INVISIBLE);
             return true;
         }
 

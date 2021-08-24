@@ -4,13 +4,12 @@
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">Hello</string>
     <string name="second_fragment_label">Authorize</string>
-    <string name="main_fragment_label">MainFragment</string>
+    <string name="main_fragment_label">Notes</string>
     <string name="authorize">Authorize</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
 
     <string name="hello_first_fragment">Hello, please authorize</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_weather">FullscreenActivity</string>
     <string name="weather_button">Get Weather</string>
     <string name="weather_content">Weather</string>

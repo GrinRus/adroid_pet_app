@@ -146,7 +146,7 @@ public class AuthFragment extends Fragment {
         intent.setAction(USER_SUCCESS_AUTH);
         activity.sendBroadcast(intent);
         NavHostFragment.findNavController(AuthFragment.this)
-                .navigate(R.id.action_SecondFragment_to_MainFragment);
+                .navigate(R.id.action_AuthFragment_to_MainFragment);
     }
 
     private void updateUI(FirebaseUser user) {

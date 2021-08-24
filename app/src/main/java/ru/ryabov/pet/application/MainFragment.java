@@ -49,6 +49,10 @@ public class MainFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() == null){
+            NavHostFragment.findNavController(MainFragment.this)
+                    .navigate(R.id.action_MainFragment_to_FirstFragment);
+        }
         dao = FirebaseDAO.getInstance().initDataSet(mAuth.getUid());
         mDataset = dao.getNotes();
         Thread thread = new Thread(new InitDatasetRunnable(dao));
