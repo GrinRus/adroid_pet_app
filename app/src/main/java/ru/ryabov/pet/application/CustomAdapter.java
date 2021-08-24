@@ -8,9 +8,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import ru.ryabov.pet.application.dao.Note;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
@@ -18,8 +18,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
 
     private List<Note> mDataSet;
 
+    @Getter
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
+        private final TextView textViewFirst;
+        private final TextView textViewSecond;
+        private final TextView textViewThird;
+        private final TextView textViewFourth;
 
         public ViewHolder(View v) {
             super(v);
@@ -29,11 +33,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                     Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
                 }
             });
-            textView = (TextView) v.findViewById(R.id.textView);
-        }
-
-        public TextView getTextView() {
-            return textView;
+            textViewFirst = (TextView) v.findViewById(R.id.textRowFirst);
+            textViewSecond = (TextView) v.findViewById(R.id.textRowSecond);
+            textViewThird = (TextView) v.findViewById(R.id.textRowThird);
+            textViewFourth = (TextView) v.findViewById(R.id.textRowFourth);
         }
     }
 
@@ -52,7 +55,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         Log.d(TAG, "Element " + position + " set.");
-        viewHolder.getTextView().setText(mDataSet.get(position).toString());
+        viewHolder.getTextViewFirst().setText(mDataSet.get(position).getDateTime());
+        viewHolder.getTextViewFourth().setText(mDataSet.get(position).getText());
     }
 
     @Override

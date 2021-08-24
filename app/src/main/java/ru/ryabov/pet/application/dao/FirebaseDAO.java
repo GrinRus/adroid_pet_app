@@ -67,9 +67,9 @@ public class FirebaseDAO {
 
     private Note toNote(QueryDocumentSnapshot document) {
         Note result = new Note();
-        result.setText(document.get("test", String.class));
+        result.setText(document.get("text", String.class));
         result.setDateTime(document.get("dateTime", String.class));
-        result.setText(document.get("userId", String.class));
+        result.setUserId(document.get("userId", String.class));
         return result;
     }
 }
